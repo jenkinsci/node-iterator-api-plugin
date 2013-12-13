@@ -23,6 +23,8 @@
  */
 package jenkins.slaves.iterators.api;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import hudson.ExtensionPoint;
 import hudson.model.Node;
@@ -46,6 +48,7 @@ public abstract class NodeIterator<N extends Node> implements Iterator<N>, Exten
      * @return a new iterator of all the {@link Node}s in the system.
      */
     @SuppressWarnings("unchecked")
+    @NonNull
     public static NodeIterator<Node> iterator() {
         return new MetaNodeIterator(Jenkins.getInstance().getExtensionList(NodeIterator.class).iterator(), Node.class);
     }
@@ -55,6 +58,7 @@ public abstract class NodeIterator<N extends Node> implements Iterator<N>, Exten
      *
      * @return an {@link Iterable}.
      */
+    @NonNull
     public static Iterable<Node> nodes() {
         return NodeIterable.ResourceHolder.INSTANCE;
     }
@@ -65,7 +69,9 @@ public abstract class NodeIterator<N extends Node> implements Iterator<N>, Exten
      * @return a new iterator of all the {@link Node}s in the system.
      */
     @SuppressWarnings("unchecked")
-    public static <N extends Node> NodeIterator<N> iterator(Class<N> nodeClass) {
+    @NonNull
+    public static <N extends Node> NodeIterator<N> iterator(@NonNull Class<N> nodeClass) {
+        nodeClass.getClass(); // throw NPE if null
         return new MetaNodeIterator(Jenkins.getInstance().getExtensionList(NodeIterator.class).iterator(), nodeClass);
     }
 
@@ -75,8 +81,66 @@ public abstract class NodeIterator<N extends Node> implements Iterator<N>, Exten
      * @return an {@link Iterable}.
      */
     @SuppressWarnings("unchecked")
-    public static <N extends Node> Iterable<N> nodes(Class<N> nodeClass) {
+    @NonNull
+    public static <N extends Node> Iterable<N> nodes(@NonNull Class<N> nodeClass) {
+        nodeClass.getClass(); // throw NPE if null
         return nodeClass.equals(Node.class) ? nodes() : new NodeIterable(nodeClass);
+    }
+
+    /**
+     * Returns {@code true} if and only if {@link jenkins.slaves.iterators.api.NodeIterator#iterator()} will iterate
+     * all live instances of {@code Node}. This is useful if you want to resolve any backing resources that do not
+     * have a corresponding {@link Node} instance. If this method returns {@code false} then it will not be possible
+     * to definitively determine the complete live set and hence it will not be possible to definitively identify
+     * unused backing resources.
+     *
+     * @return {@code true} if and only if {@link jenkins.slaves.iterators.api.NodeIterator#iterator()} will iterate
+     *         all live instances of {@code Node}.
+     * @since 1.2
+     */
+    public static boolean isComplete() {
+        return isComplete(Node.class);
+    }
+
+    /**
+     * Returns {@code true} if and only if {@link jenkins.slaves.iterators.api.NodeIterator#iterator()} will iterate
+     * all live instances of the specified subtype of {@link Node}. This is useful if you want to resolve any backing
+     * resources that do not have a corresponding {@link Node} instance. If this method returns {@code false} then it
+     * will not be possible to definitively determine the complete live set and hence it will not be possible to
+     * definitively identify unused backing resources.
+     *
+     * @param nodeClass the type of {@link Node}
+     * @return {@code true} if and only if {@link jenkins.slaves.iterators.api.NodeIterator#iterator()} will iterate
+     *         all live instances of {@code Node}.
+     * @since 1.2
+     */
+    public static <N extends Node> boolean isComplete(@NonNull Class<N> nodeClass) {
+        nodeClass.getClass(); // throw NPE if null
+        for (NodeIterator iterator : Jenkins.getInstance().getExtensionList(NodeIterator.class)) {
+            if (!iterator.hasCompleteLiveSet(nodeClass)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Implementers of {@link NodeIterator} should override this method if they "lend" {@link Node} instances to
+     * other JVMs and they require an on-line connection to those JVMs in order to iterate the {@link Node} instances
+     * that have been "lent". Where an implementer only "lends" a specific sub-type of {@link Node} it should return
+     * {@code true} if the specified node type is not a sub-type of the type of {@link Node} that it leases.
+     * Implementers should only return {@code false} when the type of {@link Node} they "lend" is a sub-type of
+     * the specified type and at least one of their connections to remote JVMs is off-line in order to allow
+     * clients of the {@link NodeIterator} API to identify unused backing resources.
+     *
+     * @param nodeClass the sub-type of {@link Node} that is being queried.
+     * @param <N>       the sub-type of {@link Node} that is being queried.
+     * @return {@code false} if and only if this {@link NodeIterator} cannot currently return the full set of
+     *         {@link Node} instances of the specified type as a result of a transient loss of remote connectivity
+     * @since 1.2
+     */
+    protected <N extends Node> boolean hasCompleteLiveSet(@NonNull Class<N> nodeClass) {
+        return true;
     }
 
     /**
@@ -84,26 +148,37 @@ public abstract class NodeIterator<N extends Node> implements Iterator<N>, Exten
      */
     private static class MetaNodeIterator<N extends Node> extends NodeIterator<N> {
 
-        private final Class<N> nodeClass;
-
         /**
-         * The current delegate.
+         * The type of {@link Node} that we are iterating.
          */
-        private Iterator<? extends Node> delegate;
-
+        @NonNull
+        private final Class<N> nodeClass;
         /**
          * The next delegate.
          */
+        @NonNull
         private final Iterator<NodeIterator<? extends Node>> metaIterator;
-
+        /**
+         * The current delegate.
+         */
+        @CheckForNull
+        private Iterator<? extends Node> delegate;
+        /**
+         * The next node.
+         */
+        @CheckForNull
         private N next;
 
         /**
          * Constructs the iterator.
          *
          * @param metaIterator the iterator of iterators.
+         * @param nodeClass    the type of {@link Node} that we are iterating.
          */
-        public MetaNodeIterator(Iterator<NodeIterator<? extends Node>> metaIterator, Class<N> nodeClass) {
+        public MetaNodeIterator(@NonNull Iterator<NodeIterator<? extends Node>> metaIterator,
+                                @NonNull Class<N> nodeClass) {
+            metaIterator.getClass(); // throw NPE if null
+            nodeClass.getClass(); // throw NPE if null
             this.delegate = Jenkins.getInstance().getNodes().iterator();
             this.metaIterator = metaIterator;
             this.nodeClass = nodeClass;
@@ -124,11 +199,8 @@ public abstract class NodeIterator<N extends Node> implements Iterator<N>, Exten
                         return true;
                     }
                 }
-                while (metaIterator.hasNext()) {
+                while (metaIterator.hasNext() && (delegate == null || !delegate.hasNext())) {
                     delegate = metaIterator.next();
-                    if (delegate.hasNext()) {
-                        return true;
-                    }
                 }
             }
             return false;
@@ -161,7 +233,28 @@ public abstract class NodeIterator<N extends Node> implements Iterator<N>, Exten
      */
     private static class NodeIterable<N extends Node> implements Iterable<N> {
 
+        /**
+         * The type of {@link Node} we are iterating.
+         */
+        @NonNull
         private Class<N> nodeClass;
+
+        /**
+         * Constructor.
+         *
+         * @param nodeClass the type of {@link Node} to iterate.
+         */
+        private NodeIterable(@NonNull Class<N> nodeClass) {
+            this.nodeClass = nodeClass;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @NonNull
+        public Iterator<N> iterator() {
+            return NodeIterator.iterator(nodeClass);
+        }
 
         /**
          * Lazy singleton pattern.
@@ -172,17 +265,6 @@ public abstract class NodeIterator<N extends Node> implements Iterator<N>, Exten
              * OK.
              */
             private static final NodeIterable<Node> INSTANCE = new NodeIterator.NodeIterable<Node>(Node.class);
-        }
-
-        private NodeIterable(Class<N> nodeClass) {
-            this.nodeClass = nodeClass;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public Iterator<N> iterator() {
-            return NodeIterator.iterator(nodeClass);
         }
     }
 }
