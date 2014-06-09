@@ -32,6 +32,7 @@ import java.util.Collections;
 import jenkins.model.Jenkins;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 /**
@@ -182,7 +183,16 @@ public abstract class NodeIterator<N extends Node> implements Iterator<N>, Exten
             metaIterator.getClass(); // throw NPE if null
             nodeClass.getClass(); // throw NPE if null
             Jenkins instance = Jenkins.getInstance();
-            this.delegate = instance == null ? Collections.<Node>emptyIterator() : instance.getNodes().iterator();
+            if (instance == null) { // during startup
+                delegate = Collections.emptyIterator();
+            } else {
+                List<Node> nodes = instance.getNodes();
+                if (nodes == null) { // also perhaps during startup
+                    delegate = Collections.emptyIterator();
+                } else {
+                    delegate = nodes.iterator();
+                }
+            }
             this.metaIterator = metaIterator;
             this.nodeClass = nodeClass;
         }
