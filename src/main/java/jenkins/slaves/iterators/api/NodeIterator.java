@@ -48,7 +48,7 @@ public abstract class NodeIterator<N extends Node> implements Iterator<N>, Exten
      *
      * @return a new iterator of all the {@link Node}s in the system.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @NonNull
     public static NodeIterator<Node> iterator() {
         return new MetaNodeIterator(Jenkins.getInstance().getExtensionList(NodeIterator.class).iterator(), Node.class);
@@ -69,7 +69,7 @@ public abstract class NodeIterator<N extends Node> implements Iterator<N>, Exten
      *
      * @return a new iterator of all the {@link Node}s in the system.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @NonNull
     public static <N extends Node> NodeIterator<N> iterator(@NonNull Class<N> nodeClass) {
         nodeClass.getClass(); // throw NPE if null
@@ -81,7 +81,7 @@ public abstract class NodeIterator<N extends Node> implements Iterator<N>, Exten
      *
      * @return an {@link Iterable}.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @NonNull
     public static <N extends Node> Iterable<N> nodes(@NonNull Class<N> nodeClass) {
         nodeClass.getClass(); // throw NPE if null
@@ -115,6 +115,7 @@ public abstract class NodeIterator<N extends Node> implements Iterator<N>, Exten
      *         all live instances of {@code Node}.
      * @since 1.2
      */
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public static <N extends Node> boolean isComplete(@NonNull Class<N> nodeClass) {
         nodeClass.getClass(); // throw NPE if null
         for (NodeIterator iterator : Jenkins.getInstance().getExtensionList(NodeIterator.class)) {
@@ -176,7 +177,7 @@ public abstract class NodeIterator<N extends Node> implements Iterator<N>, Exten
          * @param metaIterator the iterator of iterators.
          * @param nodeClass    the type of {@link Node} that we are iterating.
          */
-        public MetaNodeIterator(@NonNull Iterator<NodeIterator<? extends Node>> metaIterator,
+        MetaNodeIterator(@NonNull Iterator<NodeIterator<? extends Node>> metaIterator,
                                 @NonNull Class<N> nodeClass) {
             metaIterator.getClass(); // throw NPE if null
             nodeClass.getClass(); // throw NPE if null
@@ -195,9 +196,9 @@ public abstract class NodeIterator<N extends Node> implements Iterator<N>, Exten
             }
             while ((delegate != null && delegate.hasNext()) || metaIterator.hasNext()) {
                 while (delegate != null && delegate.hasNext()) {
-                    Node next = delegate.next();
-                    if (nodeClass.isInstance(next)) {
-                        this.next = nodeClass.cast(next);
+                    Node _next = delegate.next();
+                    if (nodeClass.isInstance(_next)) {
+                        this.next = nodeClass.cast(_next);
                         return true;
                     }
                 }
@@ -239,7 +240,7 @@ public abstract class NodeIterator<N extends Node> implements Iterator<N>, Exten
          * The type of {@link Node} we are iterating.
          */
         @NonNull
-        private Class<N> nodeClass;
+        private final Class<N> nodeClass;
 
         /**
          * Constructor.
@@ -267,6 +268,7 @@ public abstract class NodeIterator<N extends Node> implements Iterator<N>, Exten
              * OK.
              */
             private static final NodeIterable<Node> INSTANCE = new NodeIterator.NodeIterable<Node>(Node.class);
+            private ResourceHolder() {}
         }
     }
 }
