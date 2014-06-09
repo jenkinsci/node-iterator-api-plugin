@@ -28,6 +28,7 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import hudson.ExtensionPoint;
 import hudson.model.Node;
+import java.util.Collections;
 import jenkins.model.Jenkins;
 
 import java.util.Iterator;
@@ -179,7 +180,8 @@ public abstract class NodeIterator<N extends Node> implements Iterator<N>, Exten
                                 @NonNull Class<N> nodeClass) {
             metaIterator.getClass(); // throw NPE if null
             nodeClass.getClass(); // throw NPE if null
-            this.delegate = Jenkins.getInstance().getNodes().iterator();
+            Jenkins instance = Jenkins.getInstance();
+            this.delegate = instance == null ? Collections.<Node>emptyIterator() : instance.getNodes().iterator();
             this.metaIterator = metaIterator;
             this.nodeClass = nodeClass;
         }
