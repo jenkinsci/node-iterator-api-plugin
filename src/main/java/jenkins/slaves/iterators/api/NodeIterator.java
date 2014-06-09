@@ -28,9 +28,9 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import hudson.ExtensionPoint;
 import hudson.model.Node;
-import java.util.Collections;
 import jenkins.model.Jenkins;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -52,7 +52,10 @@ public abstract class NodeIterator<N extends Node> implements Iterator<N>, Exten
     @SuppressWarnings({"unchecked", "rawtypes"})
     @NonNull
     public static NodeIterator<Node> iterator() {
-        return new MetaNodeIterator(Jenkins.getInstance().getExtensionList(NodeIterator.class).iterator(), Node.class);
+        final Jenkins instance = Jenkins.getInstance();
+        return instance == null
+                ? new MetaNodeIterator(Collections.emptyIterator(), Node.class)
+                : new MetaNodeIterator(instance.getExtensionList(NodeIterator.class).iterator(), Node.class);
     }
 
     /**
@@ -74,7 +77,10 @@ public abstract class NodeIterator<N extends Node> implements Iterator<N>, Exten
     @NonNull
     public static <N extends Node> NodeIterator<N> iterator(@NonNull Class<N> nodeClass) {
         nodeClass.getClass(); // throw NPE if null
-        return new MetaNodeIterator(Jenkins.getInstance().getExtensionList(NodeIterator.class).iterator(), nodeClass);
+        final Jenkins instance = Jenkins.getInstance();
+        return instance == null
+                ? new MetaNodeIterator(Collections.emptyIterator(), nodeClass)
+                : new MetaNodeIterator(instance.getExtensionList(NodeIterator.class).iterator(), nodeClass);
     }
 
     /**
@@ -119,7 +125,11 @@ public abstract class NodeIterator<N extends Node> implements Iterator<N>, Exten
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static <N extends Node> boolean isComplete(@NonNull Class<N> nodeClass) {
         nodeClass.getClass(); // throw NPE if null
-        for (NodeIterator iterator : Jenkins.getInstance().getExtensionList(NodeIterator.class)) {
+        final Jenkins instance = Jenkins.getInstance();
+        if (instance == null) {
+            return false;
+        }
+        for (NodeIterator iterator : instance.getExtensionList(NodeIterator.class)) {
             if (!iterator.hasCompleteLiveSet(nodeClass)) {
                 return false;
             }
@@ -179,19 +189,15 @@ public abstract class NodeIterator<N extends Node> implements Iterator<N>, Exten
          * @param nodeClass    the type of {@link Node} that we are iterating.
          */
         MetaNodeIterator(@NonNull Iterator<NodeIterator<? extends Node>> metaIterator,
-                                @NonNull Class<N> nodeClass) {
+                         @NonNull Class<N> nodeClass) {
             metaIterator.getClass(); // throw NPE if null
             nodeClass.getClass(); // throw NPE if null
-            Jenkins instance = Jenkins.getInstance();
+            final Jenkins instance = Jenkins.getInstance();
             if (instance == null) { // during startup
                 delegate = Collections.emptyIterator();
             } else {
                 List<Node> nodes = instance.getNodes();
-                if (nodes == null) { // also perhaps during startup
-                    delegate = Collections.emptyIterator();
-                } else {
-                    delegate = nodes.iterator();
-                }
+                delegate = nodes == null ? Collections.<Node>emptyIterator() : nodes.iterator();
             }
             this.metaIterator = metaIterator;
             this.nodeClass = nodeClass;
@@ -278,7 +284,9 @@ public abstract class NodeIterator<N extends Node> implements Iterator<N>, Exten
              * OK.
              */
             private static final NodeIterable<Node> INSTANCE = new NodeIterator.NodeIterable<Node>(Node.class);
-            private ResourceHolder() {}
+
+            private ResourceHolder() {
+            }
         }
     }
 }
