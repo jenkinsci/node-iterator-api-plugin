@@ -66,7 +66,8 @@
   </scm>
 
   <properties>
-    <maven.findbugs.failure.strict>true</maven.findbugs.failure.strict>
+    <findbugs.failOnError>true</findbugs.failOnError>
+    <findbugs-maven-plugin.version>3.0.1</findbugs-maven-plugin.version>
   </properties>
 
   <repositories>
@@ -113,13 +114,16 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
-        <version>2.5.2</version>
+        <version>${findbugs-maven-plugin.version}</version>
         <configuration>
           <excludeFilterFile>src/findbugs/excludesFilter.xml</excludeFilterFile>
-          <failOnError>${maven.findbugs.failure.strict}</failOnError>
+          <failOnError>${findbugs.failOnError}</failOnError>
+          <xmlOutput>true</xmlOutput>
+          <findbugsXmlWithMessages>true</findbugsXmlWithMessages>
         </configuration>
         <executions>
           <execution>
+            <id>run-findbugs</id>
             <phase>verify</phase>
             <goals>
               <goal>check</goal>
