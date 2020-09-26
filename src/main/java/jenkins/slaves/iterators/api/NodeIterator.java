@@ -52,7 +52,7 @@ public abstract class NodeIterator<N extends Node> implements Iterator<N>, Exten
     @SuppressWarnings({"unchecked", "rawtypes"})
     @NonNull
     public static NodeIterator<Node> iterator() {
-        final Jenkins instance = Jenkins.getInstance();
+        final Jenkins instance = Jenkins.getInstanceOrNull();
         return instance == null
                 ? new MetaNodeIterator(Collections.emptyIterator(), Node.class)
                 : new MetaNodeIterator(instance.getExtensionList(NodeIterator.class).iterator(), Node.class);
@@ -77,7 +77,7 @@ public abstract class NodeIterator<N extends Node> implements Iterator<N>, Exten
     @NonNull
     public static <N extends Node> NodeIterator<N> iterator(@NonNull Class<N> nodeClass) {
         nodeClass.getClass(); // throw NPE if null
-        final Jenkins instance = Jenkins.getInstance();
+        final Jenkins instance = Jenkins.getInstanceOrNull();
         return instance == null
                 ? new MetaNodeIterator(Collections.emptyIterator(), nodeClass)
                 : new MetaNodeIterator(instance.getExtensionList(NodeIterator.class).iterator(), nodeClass);
@@ -85,6 +85,7 @@ public abstract class NodeIterator<N extends Node> implements Iterator<N>, Exten
 
     /**
      * Adapter to allow easy use from Java 5+ for loops.
+     * If attempting to get all nodes use {@link jenkins.slaves.iterators.api.NodeIterator# nodes()}
      *
      * @return an {@link Iterable}.
      */
@@ -92,7 +93,7 @@ public abstract class NodeIterator<N extends Node> implements Iterator<N>, Exten
     @NonNull
     public static <N extends Node> Iterable<N> nodes(@NonNull Class<N> nodeClass) {
         nodeClass.getClass(); // throw NPE if null
-        return nodeClass.equals(Node.class) ? nodes() : new NodeIterable(nodeClass);
+        return new NodeIterable(nodeClass);
     }
 
     /**
@@ -125,7 +126,7 @@ public abstract class NodeIterator<N extends Node> implements Iterator<N>, Exten
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static <N extends Node> boolean isComplete(@NonNull Class<N> nodeClass) {
         nodeClass.getClass(); // throw NPE if null
-        final Jenkins instance = Jenkins.getInstance();
+        final Jenkins instance = Jenkins.getInstanceOrNull();
         if (instance == null) {
             return false;
         }
@@ -192,7 +193,7 @@ public abstract class NodeIterator<N extends Node> implements Iterator<N>, Exten
                          @NonNull Class<N> nodeClass) {
             metaIterator.getClass(); // throw NPE if null
             nodeClass.getClass(); // throw NPE if null
-            final Jenkins instance = Jenkins.getInstance();
+            final Jenkins instance = Jenkins.getInstanceOrNull();
             if (instance == null) { // during startup
                 delegate = Collections.emptyIterator();
             } else {
