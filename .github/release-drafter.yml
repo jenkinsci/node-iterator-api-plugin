@@ -1,0 +1,3 @@
+_extends: .github
+tag-template: node-iterator-api-$NEXT_MINOR_VERSION
+name-template: Node Iterator API Plugin $NEXT_MINOR_VERSION
