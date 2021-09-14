@@ -47,7 +47,7 @@
     even those Node instances that are not traditionally attached to Jenkins. The API exposed by this
     plugin can be used by cloud provider plugins to identify unused provisioned resource.
   </description>
-  <url>http://wiki.jenkins-ci.org/display/JENKINS/Node+Iterator+API+Plugin</url>
+  <url>https://github.com/jenkinsci/node-iterator-api-plugin</url>
   <licenses>
     <license>
       <name>The MIT license</name>
