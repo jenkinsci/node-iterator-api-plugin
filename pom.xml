@@ -38,7 +38,7 @@
   </properties>
 
   <artifactId>node-iterator-api</artifactId>
-  <version>1.5.2-SNAPSHOT</version>
+  <version>1.6-SNAPSHOT</version>
   <packaging>hpi</packaging>
 
   <name>Node Iterator API Plugin</name>
