@@ -71,6 +71,9 @@ public abstract class NodeIterator<N extends Node> implements Iterator<N>, Exten
     /**
      * Returns a new iterator of all the {@link Node}s in the system.
      *
+     * @param nodeClass the type of {@link Node}
+     * @param <N> the class type of node
+     *
      * @return a new iterator of all the {@link Node}s in the system.
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -85,7 +88,10 @@ public abstract class NodeIterator<N extends Node> implements Iterator<N>, Exten
 
     /**
      * Adapter to allow easy use from Java 5+ for loops.
-     * If attempting to get all nodes use {@link jenkins.slaves.iterators.api.NodeIterator# nodes()}
+     * If attempting to get all nodes use {@link NodeIterator#nodes()}
+     *
+     * @param nodeClass the type of {@link Node}
+     * @param <N> the class type of node
      *
      * @return an {@link Iterable}.
      */
@@ -119,6 +125,8 @@ public abstract class NodeIterator<N extends Node> implements Iterator<N>, Exten
      * definitively identify unused backing resources.
      *
      * @param nodeClass the type of {@link Node}
+     * @param <N> the class type of node
+     *
      * @return {@code true} if and only if {@link jenkins.slaves.iterators.api.NodeIterator#iterator()} will iterate
      *         all live instances of {@code Node}.
      * @since 1.2
