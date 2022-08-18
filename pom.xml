@@ -33,15 +33,8 @@
     <relativePath/>
   </parent>
 
-  <properties>
-    <revision>1.5.2</revision>
-    <changelist>-SNAPSHOT</changelist>
-    <gitHubRepo>jenkinsci/node-iterator-api-plugin</gitHubRepo>
-    <jenkins.version>2.346.1</jenkins.version>
-  </properties>
-
   <artifactId>node-iterator-api</artifactId>
-  <version>${revision}${changelist}</version>
+  <version>${changelist}</version>
   <packaging>hpi</packaging>
 
   <name>Node Iterator API Plugin</name>
@@ -51,6 +44,14 @@
     plugin can be used by cloud provider plugins to identify unused provisioned resource.
   </description>
   <url>https://github.com/jenkinsci/node-iterator-api-plugin</url>
+
+
+  <properties>
+    <changelist>999999-SNAPSHOT</changelist>
+    <gitHubRepo>jenkinsci/node-iterator-api-plugin</gitHubRepo>
+    <jenkins.version>2.346.1</jenkins.version>
+  </properties>
+
   <licenses>
     <license>
       <name>The MIT license</name>
