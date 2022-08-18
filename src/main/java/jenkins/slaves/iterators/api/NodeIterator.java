@@ -206,7 +206,7 @@ public abstract class NodeIterator<N extends Node> implements Iterator<N>, Exten
                 delegate = Collections.emptyIterator();
             } else {
                 List<Node> nodes = instance.getNodes();
-                delegate = nodes == null ? Collections.<Node>emptyIterator() : nodes.iterator();
+                delegate = nodes.iterator();
             }
             this.metaIterator = metaIterator;
             this.nodeClass = nodeClass;
