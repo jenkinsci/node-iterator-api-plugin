@@ -34,11 +34,14 @@
   </parent>
 
   <properties>
+    <revision>1.5.2</revision>
+    <changelist>-SNAPSHOT</changelist>
+    <gitHubRepo>jenkinsci/node-iterator-api-plugin</gitHubRepo>
     <jenkins.version>2.346.1</jenkins.version>
   </properties>
 
   <artifactId>node-iterator-api</artifactId>
-  <version>1.5.2-SNAPSHOT</version>
+  <version>${revision}${changelist}</version>
   <packaging>hpi</packaging>
 
   <name>Node Iterator API Plugin</name>
@@ -64,10 +67,10 @@
   </developers>
 
   <scm>
-    <connection>scm:git:git://github.com/jenkinsci/node-iterator-api-plugin.git</connection>
-    <developerConnection>scm:git:git@github.com:jenkinsci/node-iterator-api-plugin.git</developerConnection>
-    <url>http://github.com/jenkinsci/node-iterator-api-plugin</url>
-    <tag>HEAD</tag>
+    <connection>scm:git:git://github.com/${gitHubRepo}.git</connection>
+    <developerConnection>scm:git:git@github.com:${gitHubRepo}.git</developerConnection>
+    <url>http://github.com/${gitHubRepo}</url>
+    <tag>${scmTag}</tag>
   </scm>
 
   <repositories>
