@@ -20,8 +20,8 @@ THE SOFTWARE.
 -->
 
 <?jelly escape-by-default='true'?>
-<description>
+<div>
     This plugin provides support for iterating through all the <a href="https://javadoc.jenkins.io/jenkins/model/Nodes.html">Node</a>
     instances that are in use by <code>Jenkins</code>, even those <code>Node</code> instances that are not traditionally attached to Jenkins. The API exposed by this
     plugin can be used by cloud provider plugins to identify unused provisioned resource.
-  </description>
+</div>
