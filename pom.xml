@@ -29,16 +29,12 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>3.50</version>
+    <version>4.46</version>
+    <relativePath/>
   </parent>
 
-  <properties>
-    <jenkins.version>2.60.3</jenkins.version>
-    <java.level>8</java.level>
-  </properties>
-
   <artifactId>node-iterator-api</artifactId>
-  <version>1.5.2-SNAPSHOT</version>
+  <version>${changelist}</version>
   <packaging>hpi</packaging>
 
   <name>Node Iterator API Plugin</name>
@@ -48,6 +44,14 @@
     plugin can be used by cloud provider plugins to identify unused provisioned resource.
   </description>
   <url>https://github.com/jenkinsci/node-iterator-api-plugin</url>
+
+
+  <properties>
+    <changelist>999999-SNAPSHOT</changelist>
+    <gitHubRepo>jenkinsci/node-iterator-api-plugin</gitHubRepo>
+    <jenkins.version>2.346.1</jenkins.version>
+  </properties>
+
   <licenses>
     <license>
       <name>The MIT license</name>
@@ -64,10 +68,10 @@
   </developers>
 
   <scm>
-    <connection>scm:git:git://github.com/jenkinsci/node-iterator-api-plugin.git</connection>
-    <developerConnection>scm:git:git@github.com:jenkinsci/node-iterator-api-plugin.git</developerConnection>
-    <url>http://github.com/jenkinsci/node-iterator-api-plugin</url>
-    <tag>HEAD</tag>
+    <connection>scm:git:git://github.com/${gitHubRepo}.git</connection>
+    <developerConnection>scm:git:git@github.com:${gitHubRepo}.git</developerConnection>
+    <url>http://github.com/${gitHubRepo}</url>
+    <tag>${scmTag}</tag>
   </scm>
 
   <repositories>
