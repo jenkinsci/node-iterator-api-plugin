@@ -29,7 +29,7 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>4.88</version>
+    <version>5.7</version>
     <relativePath />
   </parent>
 
@@ -43,13 +43,15 @@
     even those Node instances that are not traditionally attached to Jenkins. The API exposed by this
     plugin can be used by cloud provider plugins to identify unused provisioned resource.
   </description>
-  <url>https://github.com/jenkinsci/node-iterator-api-plugin</url>
+  <url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
 
 
   <properties>
     <changelist>999999-SNAPSHOT</changelist>
-    <gitHubRepo>jenkinsci/node-iterator-api-plugin</gitHubRepo>
-    <jenkins.version>2.462.3</jenkins.version>
+    <gitHubRepo>jenkinsci/${project.artifactId}-plugin</gitHubRepo>
+    <!-- https://www.jenkins.io/doc/developer/plugin-development/choosing-jenkins-baseline/ -->
+    <jenkins.baseline>2.479</jenkins.baseline>
+    <jenkins.version>${jenkins.baseline}.1</jenkins.version>
   </properties>
 
   <licenses>
